@@ -79,7 +79,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fi.Close()
-	fop := path.Join(tempdir, "out.mp4")
+	fop := path.Join(tempdir, "out2.mp4")
 	musicdir := "music"
 	musics, merr := ioutil.ReadDir(musicdir)
 	if merr != nil {
@@ -118,7 +118,39 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "it's like, it started processing, but it didn't finish? somehow")
 		return
 	}
-	fo, foerr := os.Open(fop)
+	fop2 := path.Join(tempdir, "out.avi")
+	cmd = exec.Command("ffmpeg", "-i", fop, fop2)
+	cmderr = cmd.Start()
+	if cmderr != nil {
+		log.Print(cmderr)
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, "it's like, I tried to process, but it didn't process?")
+		return
+	}
+	cmderr = cmd.Wait()
+	if cmderr != nil {
+		log.Print(cmderr, cmd)
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, "it's like, it started processing, but it didn't finish? somehow")
+		return
+	}
+	fop3 := path.Join(tempdir, "out.mp4")
+	cmd = exec.Command("ffmpeg", "-i", fop2, "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", fop3) 
+	cmderr = cmd.Start()
+	if cmderr != nil {
+		log.Print(cmderr)
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, "it's like, I tried to process, but it didn't process?")
+		return
+	}
+	cmderr = cmd.Wait()
+	if cmderr != nil {
+		log.Print(cmderr, cmd)
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, "it's like, it started processing, but it didn't finish? somehow")
+		return
+	}
+	fo, foerr := os.Open(fop3)
 	if foerr != nil {
 		log.Print(foerr)
 		w.WriteHeader(http.StatusInternalServerError)
