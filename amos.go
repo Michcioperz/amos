@@ -1,16 +1,16 @@
 package main
 
 import (
-	"log"
 	"errors"
-	"net/http"
-	"path"
 	"io"
-	"strings"
+	"io/ioutil"
+	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
-	"io/ioutil"
+	"path"
+	"strings"
 )
 
 func ProperFileDuration(file string) (string, error) {
@@ -32,7 +32,7 @@ func ProperFileDuration(file string) (string, error) {
 	if erri == -1 {
 		return "", errors.New("time= not found")
 	}
-	errtext = errtext[erri+5:erri+16]
+	errtext = errtext[erri+5 : erri+16]
 	cmderr = cmd.Wait()
 	if cmderr != nil {
 		return "", cmderr
@@ -135,7 +135,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fop3 := path.Join(tempdir, "out.mp4")
-	cmd = exec.Command("ffmpeg", "-i", fop2, "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", fop3) 
+	cmd = exec.Command("ffmpeg", "-i", fop2, "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", fop3)
 	cmderr = cmd.Start()
 	if cmderr != nil {
 		log.Print(cmderr)
